@@ -38,72 +38,6 @@
 
 
 </head>
-<script>
-  const form = document.getElementById('uploadForm');
-  const fileInput = document.getElementById('fileInput');
-  const fileNameInput = document.getElementById('fileName');
-  const statusMessage = document.getElementById('statusMessage');
-  const uploadedTasks = document.getElementById('uploadedTasks');
-
-  const GITHUB_USERNAME = 'Carlos-furnx';
-  const GITHUB_REPO = 'webpage.github.io';
-  const GITHUB_TOKEN = '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';
-  const BRANCH = 'main';
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const file = fileInput.files[0];
-    const fileName = fileNameInput.value.trim();
-
-    if (!file || !fileName) {
-      statusMessage.textContent = '⚠️ Por favor selecciona un archivo y ponle un nombre.';
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const contentBase64 = reader.result.split(',')[1];
-
-      const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/tasks/${fileName}`;
-
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${GITHUB_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: `Subida automática de ${fileName}`,
-          content: contentBase64,
-          branch: BRANCH
-        })
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        statusMessage.textContent = `✅ ¡Archivo "${fileName}" subido correctamente!`;
-
-        // Mostrar como tarjeta en la página
-        const taskCard = document.createElement('a');
-        taskCard.href = `tasks/${fileName}`;
-        taskCard.className = 'task-card';
-        taskCard.target = '_blank';
-        taskCard.textContent = `📘 Nueva tarea subida - ${fileName}`;
-        uploadedTasks.appendChild(taskCard);
-
-        // Limpiar campos
-        form.reset();
-      } else {
-        statusMessage.textContent = `❌ Error: ${result.message || 'No se pudo subir el archivo.'}`;
-        console.error(result);
-      }
-    };
-
-    reader.readAsDataURL(file);
-  });
-</script>
 
 <body>
   <header>
@@ -371,5 +305,71 @@
   <footer>
     <p>Hecho con 🖥️ por Carlos José Torre García | Bases de Datos II - 2025</p>
   </footer>
+  <script>
+    const form = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+    const fileNameInput = document.getElementById('fileName');
+    const statusMessage = document.getElementById('statusMessage');
+    const uploadedTasks = document.getElementById('uploadedTasks');
+
+    const GITHUB_USERNAME = 'Carlos-furnx';
+    const GITHUB_REPO = 'webpage.github.io';
+    const GITHUB_TOKEN = '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';
+    const BRANCH = 'main';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const file = fileInput.files[0];
+      const fileName = fileNameInput.value.trim();
+
+      if (!file || !fileName) {
+        statusMessage.textContent = '⚠️ Por favor selecciona un archivo y ponle un nombre.';
+        statusMessage.style.color = 'red';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const contentBase64 = reader.result.split(',')[1];
+        const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/tasks/${fileName}`;
+
+        const response = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${GITHUB_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: `Subida automática de ${fileName}`,
+            content: contentBase64,
+            branch: BRANCH
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          statusMessage.textContent = `✅ ¡Archivo "${fileName}" subido correctamente!`;
+          statusMessage.style.color = 'green';
+
+          const taskCard = document.createElement('a');
+          taskCard.href = `tasks/${fileName}`;
+          taskCard.className = 'task-card';
+          taskCard.target = '_blank';
+          taskCard.textContent = `📘 Nueva tarea subida - ${fileName}`;
+          uploadedTasks.appendChild(taskCard);
+
+          form.reset();
+        } else {
+          statusMessage.textContent = `❌ Error: ${result.message || 'No se pudo subir el archivo.'}`;
+          statusMessage.style.color = 'red';
+          console.error(result);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    });
+  </script>
 </body>
 </html>
