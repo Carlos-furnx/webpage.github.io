@@ -50,24 +50,7 @@
       <h1>Mis Trabajos</h1>
       <hr>
 
-     <section class="upload-section">
-  <h2>📤 Subir Nueva Tarea al Repositorio</h2>
-  <form id="uploadForm">
-    <label for="fileInput">📁 Selecciona un archivo:</label>
-    <input type="file" id="fileInput" required>
-
-    <label for="fileName">📝 Nombre en GitHub (ej: tarea16.pdf):</label>
-    <input type="text" id="fileName" placeholder="tarea16.pdf" required>
-
-    <button type="submit">Subir a GitHub</button>
-  </form>
-
-  <p id="statusMessage"></p>
-
-  <div class="task-list" id="uploadedTasks"></div>
-</section>
-
-
+     
 
       <div class="week">
         <h3 onclick="toggleHomework('week1')">📅 Semana 1</h3>
@@ -305,71 +288,6 @@
   <footer>
     <p>Hecho con 🖥️ por Carlos José Torre García | Bases de Datos II - 2025</p>
   </footer>
-  <script>
-    const form = document.getElementById('uploadForm');
-    const fileInput = document.getElementById('fileInput');
-    const fileNameInput = document.getElementById('fileName');
-    const statusMessage = document.getElementById('statusMessage');
-    const uploadedTasks = document.getElementById('uploadedTasks');
-
-    const GITHUB_USERNAME = 'Carlos-furnx';
-    const GITHUB_REPO = 'webpage.github.io';
-    const GITHUB_TOKEN = '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';
-    const BRANCH = 'main';
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const file = fileInput.files[0];
-      const fileName = fileNameInput.value.trim();
-
-      if (!file || !fileName) {
-        statusMessage.textContent = '⚠️ Por favor selecciona un archivo y ponle un nombre.';
-        statusMessage.style.color = 'red';
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const contentBase64 = reader.result.split(',')[1];
-        const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/tasks/${fileName}`;
-
-        const response = await fetch(url, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `token ${GITHUB_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: `Subida automática de ${fileName}`,
-            content: contentBase64,
-            branch: BRANCH
-          })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          statusMessage.textContent = `✅ ¡Archivo "${fileName}" subido correctamente!`;
-          statusMessage.style.color = 'green';
-
-          const taskCard = document.createElement('a');
-          taskCard.href = `tasks/${fileName}`;
-          taskCard.className = 'task-card';
-          taskCard.target = '_blank';
-          taskCard.textContent = `📘 Nueva tarea subida - ${fileName}`;
-          uploadedTasks.appendChild(taskCard);
-
-          form.reset();
-        } else {
-          statusMessage.textContent = `❌ Error: ${result.message || 'No se pudo subir el archivo.'}`;
-          statusMessage.style.color = 'red';
-          console.error(result);
-        }
-      };
-
-      reader.readAsDataURL(file);
-    });
-  </script>
+ 
 </body>
 </html>
